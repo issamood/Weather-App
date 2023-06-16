@@ -6,6 +6,4 @@ Also just general more Javascript practice. Previous projects haven't been comme
 
 Technologies used
 -----------------
-Bundled using Webpack. 
-npm
-Pirate Weather API
+Webpack, npm, Pirate Weather API, Google Geocode API

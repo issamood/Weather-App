@@ -21,6 +21,9 @@ To do list
 1.Figure out how to call the API and get data
 Incorporate async
 
+#. Take user city/zipcode/address and convert into lat,lon
+# represents no specific order to do
+
 
 */
 
