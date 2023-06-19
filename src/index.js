@@ -1,10 +1,7 @@
+//Imports
 import './style.css'
 import Wallpaper from './images/wallpaperalt.jpg'
-
-//Setup Background
-
-
-
+import addWeatherContainer from './addWeatherContainer';
 /*
 Figure out Weather API
 
@@ -19,16 +16,18 @@ Default location set to ip address location.
 
 To do list
 -----------
-1.Figure out how to call the API and get data
-Incorporate async
+1.Figure out how to call the API and get data (finished)
 
-#. Take user city/zipcode/address
-# represents no specific order to do
+No specific order
+ -Take user city/zipcode/address
+ -Get lat, lon from address
+ -Create HTML elements
 
-#Get lat, lon from address
-
-#Create HTML elements
+ CURRENTLY WORKING ON
+ --------------------
+ Adding date value in correct format to weather object.
 */
+
 //-------------------------
 //Functions
 //-------------------------
@@ -44,7 +43,22 @@ async function getWeatherData(lat,lon){
     //Convert from JSON
     const weather = await response.json();
 
-    return weather;
+    //Get date and format it correctly *CURRENTLY WORKING ON*
+    const date = "";
+    const dateInfo = new Date();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const today = days[date.getDay()]
+
+    date.concat(today + ", ");
+    
+    const weatherObject = {
+        summary: weather.currently.summary,
+        temperature: weather.currently.temperature,
+        location: "New York City",
+        date: ""
+    }
+
+    //Return an object with all the data extract from API into it, because trying to pass promises through functions is no fun.
 }
 
 //Get current weather temperature
@@ -60,6 +74,10 @@ async function getTemperature(lat, lon){
 //-------------------------
 //Logic Application
 //-------------------------
+
+//Global Variables
+const weatherData = getWeatherData(40.7128,-74.0060);
+
 const container = document.createElement('div');
 container.id = "container";
 
@@ -68,5 +86,5 @@ backgroundCover.classList.add("backgroundCover");
 backgroundCover.src = Wallpaper;
 document.body.appendChild(backgroundCover);
 
-const mainWeatherContainer = document.createElement('div');
-mainWeatherContainer.classList.add("mainWeatherContainer");
+//Create mainWeatherContainer
+addWeatherContainer(weatherData);
