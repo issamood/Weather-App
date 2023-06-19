@@ -6,9 +6,13 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/i,
-                use: ['style-loader','css-loader']
-            }
-        ]
+                use: ['style-loader','css-loader'],
+            },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+            },
+        ],
     },
     entry: './src/index.js',
     plugins: [
@@ -28,5 +32,5 @@ module.exports = {
         runtimeChunk:'single',
     },
     mode: 'development',
-    devtool: 'inline-source-map'
+    devtool: 'inline-source-map',
 }
