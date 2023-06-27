@@ -1,7 +1,16 @@
 //Imports
 import './style.css'
 import Wallpaper from './images/wallpaperalt.jpg'
-import addWeatherContainer from './addWeatherContainer';
+import clearday from './images/clear-day.svg'
+import clearnight from './images/clear-night.svg'
+import cloudy from './images/cloudy.svg'
+import fog from './images/fog.svg'
+import partlycloudyday from './images/partly-cloudy-day.svg'
+import partlycloudynight from './images/partly-cloudy-night.svg'
+import rain from './images/rain.svg'
+import sleet from './images/sleet.svg'
+import snow from './images/snow.svg'
+import wind from './images/wind.svg'
 
 /*
 Figure out Weather API
@@ -26,26 +35,25 @@ No specific order
 
  CURRENTLY WORKING ON
  --------------------
- Adding date value in correct format to weather object.
+Fixing undefined issue, really really annoying.
 */
 
 //-------------------------
 //Functions
 //-------------------------
-//getWeatherData takes latitude and longitude and returns weather data for that location
-async function getWeatherData(lat,lon){
-    //We take the lat and lon parameters and concat it into the url string, so we can change locations instead having have one only.
+//Create mainWeatherContainer
+async function createMainContainer(latitude, longitude){
     let url = "https://api.pirateweather.net/forecast/2076VPUwHo5rFjS0/";
-    url = url.concat(lat + "%2C");
-    url = url.concat(lon + "?units=us");
+    url = url.concat(latitude + "%2C");
+    url = url.concat(longitude + "?units=us");
 
     //Fetch API url response
     const response = await fetch(url,{mode:'cors'})
     //Convert from JSON
     const weather = await response.json();
 
-    //Get date and format it correctly *CURRENTLY WORKING ON*
-    const date = new Date();
+    //Get date and format it correctly 
+    const date = new Date(weather.currently.time * 1000);
 
     //We % 100 because I only want the last two digits of the year.
     let year = date.getFullYear() % 100;
@@ -67,30 +75,68 @@ async function getWeatherData(lat,lon){
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
     let dayName = days[date.getDay()];
     let month = months[date.getMonth()];
-
+    
+    //Format current date and put into object
     let currentDate = `${dayName}, ${dayDate}${day(dayDate)} ${month} '${year}`;
-    
-    console.log(currentDate);
-    
 
-    //Add to weatherObject which is going to be passed around to provide weather info
-    const weatherObject = {
-        summary: weather.currently.summary,
-        temperature: weather.currently.temperature,
-        location: "New York City",
-        date: currentDate,
+    //Format time
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = '';
+    if (hours >= 12){
+        if (hours > 12){
+            hours -= 12;
+        }
+        ampm = 'p.m.'
     }
+    else {
+        ampm = 'a.m';
+    }
+    let currentTime = hours + ':' + minutes + ' ' + ampm;
 
-    //Return an object with all the data extract from API into it, because trying to pass promises through functions is no fun.
-    return weatherObject;
-}
+    //Creating the HTML element
+    const weatherContainer = document.createElement('div');
+    weatherContainer.classList.add('mainWeatherContainer');
 
-//Get current weather temperature
-async function getTemperature(lat, lon){
-    let weather = await getWeatherData(lat, lon);
-    console.log(weather.currently.temperature);
-}
+    const summaryElement = document.createElement('h2');
+    summaryElement.innerHTML = weather.currently.summary;
+    weatherContainer.appendChild(summaryElement);
 
+    const locationElement = document.createElement('h1');
+    locationElement.innerHTML = "New York City"
+    weatherContainer.appendChild(locationElement);
+
+    const dateElement = document.createElement('p');
+    dateElement.innerHTML = currentDate;
+    weatherContainer.appendChild(dateElement);
+    
+    const timeElement = document.createElement('p');
+    timeElement.innerHTML = currentTime;
+    weatherContainer.appendChild(timeElement);
+
+    const temperatureElement = document.createElement('h3');
+    temperatureElement.innerHTML = weather.currently.temperature + "°F";
+    weatherContainer.appendChild(temperatureElement);
+
+    //Figure this out
+    const weatherIconElement = document.createElement('img');
+    switch(weather.currently.Icon){
+        case "clear-day": weatherIconElement.src = clearday;
+        case "clear-night": weatherIconElement.src = clearnight;
+        case "cloudy": weatherIconElement.src = cloudy;
+        case "fog": weatherIconElement.src = fog; 0
+        case "partly-cloudy-day": weatherIconElement.src = partlycloudyday;
+        case "partly-cloudy-night": weatherIconElement.src = partlycloudynight;
+        case "rain": weatherIconElement.src = rain;
+        case "sleet": weatherIconElement.src = sleet;
+        case "snow": weatherIconElement.src = snow;
+        case "wind": weatherIconElement.src = wind;
+    }
+    weatherContainer.appendChild(weatherIconElement);
+
+    //Return HTML element
+    container.appendChild(weatherContainer);
+};
 
 //Trying to convert address to lat lon
 //Check if geolocation API exists in browser
@@ -98,21 +144,15 @@ async function getTemperature(lat, lon){
 //-------------------------
 //Logic Application
 //-------------------------
-
-//Get weather data using function getWeatherData()
-const weatherData = getWeatherData(40.7128,-74.0060);
-
 //Body Container
 const container = document.createElement('div');
 container.id = "container";
 
 //Setting background image
-
-
 document.body.style.backgroundImage = `url(${Wallpaper})`;
 
-//Create mainWeatherContainer
-container.appendChild(addWeatherContainer(weatherData));
+//Creating Main Weather Window Container
+createMainContainer(40.7128,-74.0060);
 
 //Finally adding main container to body
 document.body.appendChild(container);
