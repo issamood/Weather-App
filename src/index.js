@@ -42,13 +42,13 @@ Fixing undefined issue, really really annoying.
 //Functions
 //-------------------------
 //Create mainWeatherContainer
-async function createMainContainer(latitude, longitude){
+async function createMainContainer(latitude, longitude) {
     let url = "https://api.pirateweather.net/forecast/2076VPUwHo5rFjS0/";
     url = url.concat(latitude + "%2C");
     url = url.concat(longitude + "?units=us");
 
     //Fetch API url response
-    const response = await fetch(url,{mode:'cors'})
+    const response = await fetch(url, { mode: 'cors' })
     //Convert from JSON
     const weather = await response.json();
 
@@ -60,22 +60,22 @@ async function createMainContainer(latitude, longitude){
     let dayDate = date.getDate();
 
     //Gets the 'st, nd, rd, th' end for numbers
-    const day = function(d) {
+    const day = function (d) {
         if (d > 3 && d < 21) return 'th';
         switch (d % 10) {
-          case 1:  return "st";
-          case 2:  return "nd";
-          case 3:  return "rd";
-          default: return "th";
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
         }
-      }
+    }
 
     //Get day and month name.
     let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let dayName = days[date.getDay()];
     let month = months[date.getMonth()];
-    
+
     //Format current date and put into object
     let currentDate = `${dayName}, ${dayDate}${day(dayDate)} ${month} '${year}`;
 
@@ -83,8 +83,8 @@ async function createMainContainer(latitude, longitude){
     let hours = date.getHours();
     let minutes = date.getMinutes();
     let ampm = '';
-    if (hours >= 12){
-        if (hours > 12){
+    if (hours >= 12) {
+        if (hours > 12) {
             hours -= 12;
         }
         ampm = 'p.m.'
@@ -109,7 +109,7 @@ async function createMainContainer(latitude, longitude){
     const dateElement = document.createElement('p');
     dateElement.innerHTML = currentDate;
     weatherContainer.appendChild(dateElement);
-    
+
     const timeElement = document.createElement('p');
     timeElement.innerHTML = currentTime;
     weatherContainer.appendChild(timeElement);
@@ -118,19 +118,28 @@ async function createMainContainer(latitude, longitude){
     temperatureElement.innerHTML = weather.currently.temperature + "°F";
     weatherContainer.appendChild(temperatureElement);
 
-    //Figure this out
     const weatherIconElement = document.createElement('img');
-    switch(weather.currently.Icon){
-        case "clear-day": weatherIconElement.src = clearday;
-        case "clear-night": weatherIconElement.src = clearnight;
-        case "cloudy": weatherIconElement.src = cloudy;
-        case "fog": weatherIconElement.src = fog; 0
-        case "partly-cloudy-day": weatherIconElement.src = partlycloudyday;
-        case "partly-cloudy-night": weatherIconElement.src = partlycloudynight;
-        case "rain": weatherIconElement.src = rain;
-        case "sleet": weatherIconElement.src = sleet;
-        case "snow": weatherIconElement.src = snow;
-        case "wind": weatherIconElement.src = wind;
+    const icon = `${weather.currently.icon}`;
+    if (icon == 'clear-day') {
+        weatherIconElement.src = clearday;
+    } else if (icon == 'clear-night') {
+        weatherIconElement.src = clearnight;
+    } else if (icon == 'cloudy') {
+        weatherIconElement.src = cloudy;
+    } else if (icon == 'fog') {
+        weatherIconElement.src = fog;
+    } else if (icon == 'partly-cloudy-day') {
+        weatherIconElement.src = partlycloudyday;
+    } else if (icon == 'partly-cloudy-night') {
+        weatherIconElement.src = partlycloudynight;
+    } else if (icon == 'rain') {
+        weatherIconElement.src = rain;
+    } else if (icon == 'sleet') {
+        weatherIconElement.src = sleet;
+    } else if (icon == 'snow') {
+        weatherIconElement.src = snow;
+    } else if (icon == 'wind') {
+        weatherIconElement.src = wind;
     }
     weatherContainer.appendChild(weatherIconElement);
 
@@ -152,7 +161,7 @@ container.id = "container";
 document.body.style.backgroundImage = `url(${Wallpaper})`;
 
 //Creating Main Weather Window Container
-createMainContainer(40.7128,-74.0060);
+createMainContainer(40.7128, -74.0060);
 
 //Finally adding main container to body
 document.body.appendChild(container);
