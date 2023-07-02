@@ -144,6 +144,27 @@ async function createMainContainer(latitude, longitude) {
     }
     weatherContainer.appendChild(weatherIconElement);
 
+    //Return HTML element
+    container.appendChild(weatherContainer);
+};
+
+async function getUserLocation(){
+    if (navigator.geolocation){
+        const successCallback = (position) => {
+            createMainContainer(position.coords.latitude, position.coords.longitude);
+        }
+        const errorCallback = (error) => {
+            console.log(error);
+        }
+        await navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+    }
+    else{
+        console.log('Geolocation API is not supported on this browser');
+    }
+
+}
+
+function createForm(){
     //Search Location Bar
     const formContainer = document.createElement('form');
     const formLabel = document.createElement('label');
@@ -170,26 +191,8 @@ async function createMainContainer(latitude, longitude) {
     formContainer.appendChild(formInput);
     formContainer.appendChild(formButton);
 
+    const weatherContainer = document.querySelector('mainWeatherContainer');
     weatherContainer.appendChild(formContainer);
-
-    //Return HTML element
-    container.appendChild(weatherContainer);
-};
-
-async function getUserLocation(){
-    if (navigator.geolocation){
-        const successCallback = (position) => {
-            createMainContainer(position.coords.latitude, position.coords.longitude);
-        }
-        const errorCallback = (error) => {
-            console.log(error);
-        }
-        await navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-    }
-    else{
-        console.log('Geolocation API is not supported on this browser');
-    }
-
 }
 
 //Trying to convert address to lat lon
@@ -205,8 +208,9 @@ container.id = "container";
 //Setting background image
 document.body.style.backgroundImage = `url(${Wallpaper})`;
 
-//Creating Main Weather Window Container
+//Creating initial Main Weather Window Container
 getUserLocation();
+createForm();
 
 //Finally adding main container to body
 document.body.appendChild(container);
