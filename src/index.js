@@ -97,7 +97,7 @@ async function createMainContainer(latitude, longitude) {
     const address = addressData.results[7].address_components[0].long_name;
     //Creating the HTML element
     const weatherContainer = document.createElement('div');
-    weatherContainer.classList.add('mainWeatherContainer');
+    weatherContainer.id = 'mainWeatherContainer';
 
     const summaryElement = document.createElement('h2');
     summaryElement.innerHTML = weather.currently.summary;
@@ -144,6 +144,10 @@ async function createMainContainer(latitude, longitude) {
     }
     weatherContainer.appendChild(weatherIconElement);
 
+    if(!document.querySelector('#form')){
+        weatherContainer.appendChild(createForm());
+    }
+
     //Return HTML element
     container.appendChild(weatherContainer);
 };
@@ -167,6 +171,7 @@ async function getUserLocation(){
 function createForm(){
     //Search Location Bar
     const formContainer = document.createElement('form');
+    formContainer.id = 'form';
     const formLabel = document.createElement('label');
     formLabel.setAttribute('for','location');
 
@@ -191,8 +196,7 @@ function createForm(){
     formContainer.appendChild(formInput);
     formContainer.appendChild(formButton);
 
-    const weatherContainer = document.querySelector('mainWeatherContainer');
-    weatherContainer.appendChild(formContainer);
+    return formContainer;
 }
 
 //Trying to convert address to lat lon
@@ -210,7 +214,7 @@ document.body.style.backgroundImage = `url(${Wallpaper})`;
 
 //Creating initial Main Weather Window Container
 getUserLocation();
-createForm();
+
 
 //Finally adding main container to body
 document.body.appendChild(container);

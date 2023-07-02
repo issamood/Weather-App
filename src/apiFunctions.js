@@ -29,11 +29,3 @@ async function getCoordinate(location){
 
     return coordinate;
 }
-
-async function getAddress(lat, lon){
-    let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=AIzaSyCKUXPKu7DxG7YMXnIiQ2T1ZcGcDkTo0Gs`
-    const response = await fetch(url, {mode: "cors"})
-    const addressData = await response.json();
-
-    addressData.results[0]["address_components"][5]["long_name"];
-}
