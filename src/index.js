@@ -1,5 +1,6 @@
 //Imports
 import './style.css'
+import * as apiFunc from './apiFunctions';
 import Wallpaper from './images/wallpaperalt.jpg'
 import clearday from './images/clear-day.svg'
 import clearnight from './images/clear-night.svg'
@@ -11,6 +12,7 @@ import rain from './images/rain.svg'
 import sleet from './images/sleet.svg'
 import snow from './images/snow.svg'
 import wind from './images/wind.svg'
+import search from './images/search.svg'
 
 /*
 Figure out Weather API
@@ -26,16 +28,7 @@ Default location set to ip address location.
 
 To do list
 -----------
-1.Figure out how to call the API and get data (finished)
-
-No specific order
- -Take user city/zipcode/address
- -Get lat, lon from address
- -Create HTML elements
-
- CURRENTLY WORKING ON
- --------------------
-Fixing undefined issue, really really annoying.
+Change layout and maybe api too.
 */
 
 //-------------------------
@@ -82,6 +75,9 @@ async function createMainContainer(latitude, longitude) {
     //Format time
     let hours = date.getHours();
     let minutes = date.getMinutes();
+    if(minutes < 10) {
+        minutes = '0' + minutes;
+    }
     let ampm = '';
     if (hours >= 12) {
         if (hours > 12) {
@@ -94,6 +90,11 @@ async function createMainContainer(latitude, longitude) {
     }
     let currentTime = hours + ':' + minutes + ' ' + ampm;
 
+    //Get location name
+    let reverseGeocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCKUXPKu7DxG7YMXnIiQ2T1ZcGcDkTo0Gs`
+    const reverseResponse = await fetch(reverseGeocodeUrl, {mode: "cors"})
+    const addressData = await reverseResponse.json();
+    const address = addressData.results[7].address_components[0].long_name;
     //Creating the HTML element
     const weatherContainer = document.createElement('div');
     weatherContainer.classList.add('mainWeatherContainer');
@@ -103,7 +104,7 @@ async function createMainContainer(latitude, longitude) {
     weatherContainer.appendChild(summaryElement);
 
     const locationElement = document.createElement('h1');
-    locationElement.innerHTML = "New York City"
+    locationElement.innerHTML = address;
     weatherContainer.appendChild(locationElement);
 
     const dateElement = document.createElement('p');
@@ -143,9 +144,53 @@ async function createMainContainer(latitude, longitude) {
     }
     weatherContainer.appendChild(weatherIconElement);
 
+    //Search Location Bar
+    const formContainer = document.createElement('form');
+    const formLabel = document.createElement('label');
+    formLabel.setAttribute('for','location');
+
+    const formInput = document.createElement('input');
+    formInput.className = "formInput";
+    formInput.setAttribute('type','text');
+    formInput.id = "location";
+    formInput.setAttribute('name','location');
+
+    const formButton = document.createElement('button');
+    const buttonIcon = document.createElement('img');
+
+    buttonIcon.src = search;
+    formButton.appendChild(buttonIcon);
+    formButton.addEventListener('click', () => {
+        const location = apiFunc.getFormInput();
+        const coordinate = apiFunc.getCoordinate(location);
+
+
+    });
+    formContainer.appendChild(formLabel);
+    formContainer.appendChild(formInput);
+    formContainer.appendChild(formButton);
+
+    weatherContainer.appendChild(formContainer);
+
     //Return HTML element
     container.appendChild(weatherContainer);
 };
+
+async function getUserLocation(){
+    if (navigator.geolocation){
+        const successCallback = (position) => {
+            createMainContainer(position.coords.latitude, position.coords.longitude);
+        }
+        const errorCallback = (error) => {
+            console.log(error);
+        }
+        await navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+    }
+    else{
+        console.log('Geolocation API is not supported on this browser');
+    }
+
+}
 
 //Trying to convert address to lat lon
 //Check if geolocation API exists in browser
@@ -161,7 +206,7 @@ container.id = "container";
 document.body.style.backgroundImage = `url(${Wallpaper})`;
 
 //Creating Main Weather Window Container
-createMainContainer(40.7128, -74.0060);
+getUserLocation();
 
 //Finally adding main container to body
 document.body.appendChild(container);
