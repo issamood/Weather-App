@@ -91,10 +91,11 @@ async function createMainContainer(latitude, longitude) {
     let currentTime = hours + ':' + minutes + ' ' + ampm;
 
     //Get location name
-    let reverseGeocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCKUXPKu7DxG7YMXnIiQ2T1ZcGcDkTo0Gs`
+    let reverseGeocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDbXcxX3nPlmvxH1PGA5fEL1qKLweQmkEY`
     const reverseResponse = await fetch(reverseGeocodeUrl, {mode: "cors"})
     const addressData = await reverseResponse.json();
-    const address = addressData.results[7].address_components[0].long_name;
+    console.log(addressData);
+    const address = await addressData.results[7].address_components[0].long_name;
     //Creating the HTML element
     const weatherContainer = document.createElement('div');
     weatherContainer.id = 'mainWeatherContainer';
@@ -186,11 +187,14 @@ function createForm(){
 
     buttonIcon.src = search;
     formButton.appendChild(buttonIcon);
-    formButton.addEventListener('click', () => {
+    formButton.setAttribute('type','button');
+    formButton.addEventListener('click', async () => {
         const location = apiFunc.getFormInput();
-        const coordinate = apiFunc.getCoordinate(location);
 
+        const coordinate = await apiFunc.getCoordinate(location)
 
+        console.log(coordinate.latitude);
+        console.log(coordinate.longitude);
     });
     formContainer.appendChild(formLabel);
     formContainer.appendChild(formInput);

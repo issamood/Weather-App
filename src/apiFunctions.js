@@ -17,15 +17,20 @@ function getFormInput(){
 
 async function getCoordinate(location){
     let url = "https://api.api-ninjas.com/v1/geocoding?city="
-    url.concat(location);
+    url = url.concat(location);
 
-    const response = await fetch(url, {mode: "cors"});
+    const response = await fetch(url, {mode: "cors", headers: { 'X-Api-Key': 'SKQddcY0gwMgsYsXyZgHjw==LXqrkdAui3lta99z'}});
     const geocodeData = await response.json();
 
+    console.log(geocodeData);
     const coordinate = {
-        latitude: geocodeData.latitude,
-        longitude: geocodeData.longitude
+        latitude: geocodeData[0].latitude,
+        longitude: geocodeData[0].longitude
     }
-
     return coordinate;
+}
+
+export {
+    getFormInput,
+    getCoordinate
 }
