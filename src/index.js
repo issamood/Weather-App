@@ -15,20 +15,11 @@ import wind from './images/wind.svg'
 import search from './images/search.svg'
 
 /*
-Figure out Weather API
-
-How to get data for today
-What kind of data to get
-The day, temperature, the weather condition, high/low temps,
-humidity, wind not as important but just extra data if needed
-
-Search city function bar
-
-Default location set to ip address location.
-
 To do list
 -----------
-Change layout and maybe api too.
+-Add search town button functionality and update doms (Finished)
+-Fix time locality depending on town location
+
 */
 
 //-------------------------
@@ -36,9 +27,17 @@ Change layout and maybe api too.
 //-------------------------
 //Create mainWeatherContainer
 async function createMainContainer(latitude, longitude) {
+    //If container already exists, wipe it out
+    if (document.querySelector('#mainWeatherContainer')){
+        const mainWeatherContainer = document.querySelector('#mainWeatherContainer');
+        mainWeatherContainer.textContent = '';
+        mainWeatherContainer.remove();
+    }
+
     let url = "https://api.pirateweather.net/forecast/2076VPUwHo5rFjS0/";
-    url = url.concat(latitude + "%2C");
+    url = url.concat(latitude + ",");
     url = url.concat(longitude + "?units=us");
+    url = url.concat('&tz=[precise]');
 
     //Fetch API url response
     const response = await fetch(url, { mode: 'cors' })
@@ -46,6 +45,7 @@ async function createMainContainer(latitude, longitude) {
     const weather = await response.json();
 
     //Get date and format it correctly 
+    console.log(weather);
     const date = new Date(weather.currently.time * 1000);
 
     //We % 100 because I only want the last two digits of the year.
@@ -73,29 +73,21 @@ async function createMainContainer(latitude, longitude) {
     let currentDate = `${dayName}, ${dayDate}${day(dayDate)} ${month} '${year}`;
 
     //Format time
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    if(minutes < 10) {
-        minutes = '0' + minutes;
-    }
-    let ampm = '';
-    if (hours >= 12) {
-        if (hours > 12) {
-            hours -= 12;
-        }
-        ampm = 'p.m.'
+    let currentTime = date.toLocaleTimeString('en-US', {timeZone : `${weather.timezone}`});
+    if (currentTime.length == 11){
+        currentTime = currentTime.slice(0,5) + ' ' + currentTime.slice(8,11);
     }
     else {
-        ampm = 'a.m';
+        currentTime = currentTime.slice(0,4) + ' ' + currentTime.slice(7,10);
     }
-    let currentTime = hours + ':' + minutes + ' ' + ampm;
 
     //Get location name
     let reverseGeocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDbXcxX3nPlmvxH1PGA5fEL1qKLweQmkEY`
     const reverseResponse = await fetch(reverseGeocodeUrl, {mode: "cors"})
     const addressData = await reverseResponse.json();
     console.log(addressData);
-    const address = await addressData.results[7].address_components[0].long_name;
+    const address = await addressData.results[0].address_components[2].long_name;
+
     //Creating the HTML element
     const weatherContainer = document.createElement('div');
     weatherContainer.id = 'mainWeatherContainer';
@@ -169,6 +161,7 @@ async function getUserLocation(){
 
 }
 
+//Create form for location input
 function createForm(){
     //Search Location Bar
     const formContainer = document.createElement('form');
@@ -193,8 +186,7 @@ function createForm(){
 
         const coordinate = await apiFunc.getCoordinate(location)
 
-        console.log(coordinate.latitude);
-        console.log(coordinate.longitude);
+        createMainContainer(coordinate.latitude, coordinate.longitude);
     });
     formContainer.appendChild(formLabel);
     formContainer.appendChild(formInput);
@@ -202,9 +194,6 @@ function createForm(){
 
     return formContainer;
 }
-
-//Trying to convert address to lat lon
-//Check if geolocation API exists in browser
 
 //-------------------------
 //Logic Application
