@@ -22,7 +22,6 @@ async function getCoordinate(location){
     const response = await fetch(url, {mode: "cors", headers: { 'X-Api-Key': 'SKQddcY0gwMgsYsXyZgHjw==LXqrkdAui3lta99z'}});
     const geocodeData = await response.json();
 
-    console.log(geocodeData);
     const coordinate = {
         latitude: geocodeData[0].latitude,
         longitude: geocodeData[0].longitude
@@ -30,7 +29,21 @@ async function getCoordinate(location){
     return coordinate;
 }
 
+async function getWeatherPromise(latitude, longitude){
+    let url = "https://api.pirateweather.net/forecast/2076VPUwHo5rFjS0/";
+    url = url.concat(latitude + ",");
+    url = url.concat(longitude + "?units=us");
+    url = url.concat('&tz=[precise]');
+
+    const response = await fetch(url, { mode: 'cors' })
+    const weather = await response.json();
+
+    return weather;
+}
+
+
 export {
     getFormInput,
-    getCoordinate
+    getCoordinate,
+    getWeatherPromise
 }

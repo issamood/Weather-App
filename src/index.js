@@ -13,6 +13,9 @@ import sleet from './images/sleet.svg'
 import snow from './images/snow.svg'
 import wind from './images/wind.svg'
 import search from './images/search.svg'
+import humidity from './images/humidity.svg'
+import rainchance from './images/rainchance.svg'
+
 
 /*
 To do list
@@ -34,18 +37,9 @@ async function createMainContainer(latitude, longitude) {
         mainWeatherContainer.remove();
     }
 
-    let url = "https://api.pirateweather.net/forecast/2076VPUwHo5rFjS0/";
-    url = url.concat(latitude + ",");
-    url = url.concat(longitude + "?units=us");
-    url = url.concat('&tz=[precise]');
-
-    //Fetch API url response
-    const response = await fetch(url, { mode: 'cors' })
-    //Convert from JSON
-    const weather = await response.json();
+    const weather = await apiFunc.getWeatherPromise(latitude,longitude);
 
     //Get date and format it correctly 
-    console.log(weather);
     const date = new Date(weather.currently.time * 1000);
 
     //We % 100 because I only want the last two digits of the year.
@@ -145,20 +139,68 @@ async function createMainContainer(latitude, longitude) {
     container.appendChild(weatherContainer);
 };
 
-async function getUserLocation(){
-    if (navigator.geolocation){
-        const successCallback = (position) => {
-            createMainContainer(position.coords.latitude, position.coords.longitude);
-        }
-        const errorCallback = (error) => {
-            console.log(error);
-        }
-        await navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-    }
-    else{
-        console.log('Geolocation API is not supported on this browser');
-    }
+async function createSecondContainer(latitude, longitude) {
+    //Get weather API data
+    const weather = await apiFunc.getWeatherPromise(latitude, longitude);
 
+    //Create a container that displays humidity, chance of rain and wind speed
+    const secondContainer = document.createElement('div');
+    secondContainer.className = 'secondContainer';
+
+    const humidityContainer = document.createElement('div');
+    humidityContainer.className = 'humidityContainer';
+    const humidityIcon = document.createElement('img');
+    humidityIcon.src = humidity;
+    const humidityInfo = document.createElement('div');
+    humidityInfo.className = 'info';
+    const humidityLabel = document.createElement('h1');
+    humidityLabel.innerHTML = 'Humidity';
+    const humidityValue = document.createElement('h1');
+    humidityValue.innerHTML = weather.currently.humidity * 100 + '%';
+    
+    humidityInfo.appendChild(humidityLabel);
+    humidityInfo.appendChild(humidityValue);
+    humidityContainer.appendChild(humidityInfo);
+    humidityContainer.appendChild(humidityIcon);
+    
+    const rainContainer = document.createElement('div');
+    rainContainer.className = 'rainContainer';
+    const rainIcon = document.createElement('img');
+    rainIcon.src = rainchance;
+    const rainInfo = document.createElement('div');
+    rainInfo.className = 'info';
+    const rainLabel = document.createElement('h1');
+    rainLabel.innerHTML = 'Chance of Rain';
+    const rainValue = document.createElement('h1');
+    rainValue.innerHTML = weather.currently.precipProbability * 100 + '%';
+
+    rainInfo.appendChild(rainLabel);
+    rainInfo.appendChild(rainValue);
+    rainContainer.appendChild(rainInfo);
+    rainContainer.appendChild(rainIcon);
+
+    const windContainer = document.createElement('div');
+    windContainer.className = 'windContainer';
+    const windIcon = document.createElement('img');
+    windIcon.src = wind;
+    const windInfo = document.createElement('div');
+    windInfo.className = 'info';
+    const windLabel = document.createElement('h1');
+    windLabel.innerHTML = 'Wind Speed';
+    const windValue = document.createElement('h1');
+    windValue.innerHTML = weather.currently.windSpeed + ' m/h';
+
+    windInfo.appendChild(windLabel);
+    windInfo.appendChild(windValue);
+    windContainer.appendChild(windIcon);
+    windContainer.appendChild(windInfo);
+
+    //Put into second container
+    secondContainer.appendChild(humidityContainer);
+    secondContainer.appendChild(rainContainer);
+    secondContainer.appendChild(windContainer);
+
+    container.appendChild(secondContainer);
 }
 
 //Create form for location input
@@ -195,6 +237,29 @@ function createForm(){
     return formContainer;
 }
 
+async function getUserLocation(){
+    async function success(pos){
+        const crd = pos.coords;
+
+        createMainContainer(crd.latitude, crd.longitude);
+        createSecondContainer(crd.latitude, crd.longitude);
+    }
+    
+    navigator.geolocation.getCurrentPosition(success);
+    
+}
+
+//Windy API
+const options = {
+    key: 'ebSZBZu6R9ZeRHMnzS6WrSOEFLZnLEsV',
+    verbose: true,
+
+    //Optional: Initial state of the map
+    lat: 50.4,
+    lon: 14.3,
+    zoom: 5,
+}
+
 //-------------------------
 //Logic Application
 //-------------------------
@@ -208,6 +273,15 @@ document.body.style.backgroundImage = `url(${Wallpaper})`;
 //Creating initial Main Weather Window Container
 getUserLocation();
 
+//Initialize Windy API
+/*windyInit(options, windyAPI => {
+    const {map} = windyAPI;
+
+    L.popup()
+        .setLatLng([50.4, 14.3])
+        .setContent('Hello World')
+        .openOn(map);
+});*/
 
 //Finally adding main container to body
 document.body.appendChild(container);
