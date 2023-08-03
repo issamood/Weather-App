@@ -106,28 +106,9 @@ async function createMainContainer(latitude, longitude) {
     weatherContainer.appendChild(temperatureElement);
 
     const weatherIconElement = document.createElement('img');
-    const icon = `${weather.currently.icon}`;
-    if (icon == 'clear-day') {
-        weatherIconElement.src = clearday;
-    } else if (icon == 'clear-night') {
-        weatherIconElement.src = clearnight;
-    } else if (icon == 'cloudy') {
-        weatherIconElement.src = cloudy;
-    } else if (icon == 'fog') {
-        weatherIconElement.src = fog;
-    } else if (icon == 'partly-cloudy-day') {
-        weatherIconElement.src = partlycloudyday;
-    } else if (icon == 'partly-cloudy-night') {
-        weatherIconElement.src = partlycloudynight;
-    } else if (icon == 'rain') {
-        weatherIconElement.src = rain;
-    } else if (icon == 'sleet') {
-        weatherIconElement.src = sleet;
-    } else if (icon == 'snow') {
-        weatherIconElement.src = snow;
-    } else if (icon == 'wind') {
-        weatherIconElement.src = wind;
-    }
+    const icon = getWeatherIcon(weather.currently.icon);
+    icon.className = 'currentIcon';
+
     weatherContainer.appendChild(weatherIconElement);
 
     if(!document.querySelector('#form')){
@@ -137,6 +118,34 @@ async function createMainContainer(latitude, longitude) {
     //Return HTML element
     container.appendChild(weatherContainer);
 };
+
+function getWeatherIcon(icon){
+    const iconElement = document.createElement('img');
+
+    if (icon == 'clear-day') {
+        iconElement.src = clearday;
+    } else if (icon == 'clear-night') {
+        iconElement.src = clearnight;
+    } else if (icon == 'cloudy') {
+        iconElement.src = cloudy;
+    } else if (icon == 'fog') {
+        iconElement.src = fog;
+    } else if (icon == 'partly-cloudy-day') {
+        iconElement.src = partlycloudyday;
+    } else if (icon == 'partly-cloudy-night') {
+        iconElement.src = partlycloudynight;
+    } else if (icon == 'rain') {
+        iconElement.src = rain;
+    } else if (icon == 'sleet') {
+        iconElement.src = sleet;
+    } else if (icon == 'snow') {
+        iconElement.src = snow;
+    } else if (icon == 'wind') {
+        iconElement.src = wind;
+    }
+
+    return iconElement;
+}
 
 async function createSecondContainer(latitude, longitude) {
     //Get weather API data
@@ -236,12 +245,41 @@ function createForm(){
     return formContainer;
 }
 
+//Create daily container
+async function createDailyContainer(latitude, longitude){
+    const weather = await apiFunc.getWeatherPromise(latitude, longitude);
+    const dailyContainer = document.createElement('div');
+    dailyContainer.className = 'dailyContainer';
+
+    for (let i = 0; i < 7; i++){
+        const dayContainer = document.createElement('div');
+        dayContainer.id = i;
+
+        //Get Day (sat, monday)
+        //Get day temp
+        //get weather icon
+
+        const day = 'Monday';
+        const dayTemp = '34';
+        const weatherIcon = getWeatherIcon(weather.currently.icon);
+        weatherIcon.className = 'dailyIcon';
+
+        dayContainer.appendChild(day);
+        dayContainer.appendChild(dayTemp);
+        dayContainer.appendChild(weatherIcon);
+
+        dailyContainer.appendChild(dayContainer)
+    }
+    container.appendChild(dailyContainer);
+}
+
 async function getUserLocation(){
     async function success(pos){
         const crd = pos.coords;
 
         createMainContainer(crd.latitude, crd.longitude);
         createSecondContainer(crd.latitude, crd.longitude);
+
     }
     
     navigator.geolocation.getCurrentPosition(success);

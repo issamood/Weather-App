@@ -22,3 +22,8 @@ body {
     justify-content: space-between;
 }
 
+.dailyContainer{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
