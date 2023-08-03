@@ -20,8 +20,7 @@ import rainchance from './images/rainchance.svg'
 /*
 To do list
 -----------
--Add search town button functionality and update doms (Finished)
--Fix time locality depending on town location
+Create daily foreast chart container
 
 */
 
@@ -37,7 +36,7 @@ async function createMainContainer(latitude, longitude) {
         mainWeatherContainer.remove();
     }
 
-    const weather = await apiFunc.getWeatherPromise(latitude,longitude);
+    const weather = await apiFunc.getWeatherPromise(latitude,longitude); //THIS IS HOW YOU TAKE API INFO
 
     //Get date and format it correctly 
     const date = new Date(weather.currently.time * 1000);
@@ -249,17 +248,6 @@ async function getUserLocation(){
     
 }
 
-//Windy API
-const options = {
-    key: 'ebSZBZu6R9ZeRHMnzS6WrSOEFLZnLEsV',
-    verbose: true,
-
-    //Optional: Initial state of the map
-    lat: 50.4,
-    lon: 14.3,
-    zoom: 5,
-}
-
 //-------------------------
 //Logic Application
 //-------------------------
@@ -272,16 +260,6 @@ document.body.style.backgroundImage = `url(${Wallpaper})`;
 
 //Creating initial Main Weather Window Container
 getUserLocation();
-
-//Initialize Windy API
-/*windyInit(options, windyAPI => {
-    const {map} = windyAPI;
-
-    L.popup()
-        .setLatLng([50.4, 14.3])
-        .setContent('Hello World')
-        .openOn(map);
-});*/
 
 //Finally adding main container to body
 document.body.appendChild(container);
