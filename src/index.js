@@ -258,17 +258,21 @@ async function createDailyContainer(latitude, longitude){
         //Get Day (sat, monday)
         //Get day temp
         //get weather icon
+        const date = new Date(weather.daily.data[i].time * 1000)
 
-        const day = 'Monday';
-        const dayTemp = '34';
-        const weatherIcon = getWeatherIcon(weather.currently.icon);
+        let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const day = days[date.getDay()];
+        const dayHighTemp = weather.daily.data[i].temperatureHigh;
+        const dayLowTemp = weather.daily.data[i].temperatureLow;
+        const weatherIcon = getWeatherIcon(weather.daily.data[i].icon);
         weatherIcon.className = 'dailyIcon';
 
         dayContainer.appendChild(day);
-        dayContainer.appendChild(dayTemp);
+        dayContainer.appendChild(dayHighTemp);
+        dayContainer.appendChild(dayLowTemp);
         dayContainer.appendChild(weatherIcon);
 
-        dailyContainer.appendChild(dayContainer)
+        dailyContainer.appendChild(dayContainer);
     }
     container.appendChild(dailyContainer);
 }
