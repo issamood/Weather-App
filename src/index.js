@@ -251,6 +251,7 @@ async function createDailyContainer(latitude, longitude){
     const dailyContainer = document.createElement('div');
     dailyContainer.className = 'dailyContainer';
 
+    //Iterate it, because it's the same
     for (let i = 0; i < 7; i++){
         const dayContainer = document.createElement('div');
         dayContainer.id = i;
@@ -265,11 +266,27 @@ async function createDailyContainer(latitude, longitude){
         const dayHighTemp = weather.daily.data[i].temperatureHigh;
         const dayLowTemp = weather.daily.data[i].temperatureLow;
         const weatherIcon = getWeatherIcon(weather.daily.data[i].icon);
-        weatherIcon.className = 'dailyIcon';
+        
+        const dayElement = document.createElement('h2');
+        const dayHighTempElement = document.createElement('h1');
+        const dayLowTempElement = document.createElement('h2');
+        const weatherIconElement = document.createElement('img');
 
-        dayContainer.appendChild(day);
-        dayContainer.appendChild(dayHighTemp);
-        dayContainer.appendChild(dayLowTemp);
+        dayElement.className = 'daily';
+        dayElement.id = 'day';
+        dayHighTempElement.className = 'daily';
+        dayHighTempElement.id = 'dayHigh';
+        dayLowTempElement.className = 'daily';
+        dayHighTempElement.id = 'daily';
+
+        dayElement.innerHTML = day;
+        dayHighTempElement.innerHTML = dayHighTemp;
+        dayLowTempElement.innerHTML = dayLowTemp;
+        weatherIconElement.src = weatherIcon;
+
+        dayContainer.appendChild(dayElement);
+        dayContainer.appendChild(dayHighTempElement);
+        dayContainer.appendChild(dayLowTempElement);
         dayContainer.appendChild(weatherIcon);
 
         dailyContainer.appendChild(dayContainer);
@@ -283,7 +300,7 @@ async function getUserLocation(){
 
         createMainContainer(crd.latitude, crd.longitude);
         createSecondContainer(crd.latitude, crd.longitude);
-
+        createDailyContainer(crd.latitude, crd.longitude);
     }
     
     navigator.geolocation.getCurrentPosition(success);
