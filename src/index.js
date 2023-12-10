@@ -314,9 +314,6 @@ async function getUserLocation(){
 const container = document.createElement('div');
 container.id = "container";
 
-//Setting background image
-document.body.style.backgroundImage = `url(${Wallpaper})`;
-
 //Creating initial Main Weather Window Container
 getUserLocation();
 
